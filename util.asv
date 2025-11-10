@@ -1,0 +1,8 @@
+r = 2;
+m = 5;
+
+
+[G, points] = kasami_grm_matrix(r, m);
+[H, points] = kasami_grm_paritycheck_kasami(r, m);
+
+[shift_mat, is_codeword] = stack_left_shifts_in_code(H, m, 5)

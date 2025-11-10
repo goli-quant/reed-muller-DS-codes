@@ -1,0 +1,23 @@
+function [shift_mat, is_codeword] = stack_left_shifts_in_code(G, m, l)
+    % G: generator matrix (k x n)
+    % l: number of consecutive left shifts to stack
+    % Returns:
+    %   shift_mat [l x n]: each row is a left-cyclic-shifted version of G(end,:)
+    %   is_codeword [1 x l]: true/false, is row a codeword
+
+    n = size(G,2);
+    first = G(1,:);
+    shift_mat = zeros(l, n);
+    is_codeword = false(1, l);
+
+    shifted = first;
+    for i = 1:m-1
+        shifted = circshift(shifted, [0, -1]);
+    end
+
+    for i=1:l
+        shift_mat(i,:) = shifted;
+        shifted = circshift(shifted, [0, -1]);
+        is_codeword(i) = is_codeword_of_G(shifted, G);
+    end    
+end

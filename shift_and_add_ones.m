@@ -1,0 +1,35 @@
+function [H_prime, is_codeword] = shift_and_add_ones(H, m, r)
+% H: k x n (parity-check matrix, k = size(H,1), n = size(H,2))
+% m: # of degree-1 generators (first m rows are cyclic block)
+% r: code order (not used directly, included for clarity)
+
+[p,n] = size(H);
+k = n-p;
+all_ones_vec = ones(1, n);
+
+H_prime = zeros(k, n);
+is_codeword = false(1, k);
+first = H(1,:);
+shifted = first;
+for i = 1:m-1
+    shifted = circshift(shifted, [0, -1]);
+end
+% Block 1: Degree-1 (first m rows), m cyclic shifts (each row is a circshift)
+for i=1:m
+    shifted = circshift(shifted, [0, -1]);
+    H_prime(i, :) = mod(shifted + all_ones_vec, 2);
+    is_codeword(i) = is_codeword_of_G(shifted, H);
+end
+
+if r > 1
+    shifted = H(p-1,:);  
+    % Remaining blocks: higher-degree (rows m+1 to k), just cyclic shift own rows
+    for j = (m+1):k
+        shifted = circshift(shifted, [0, -1]); % Next (k-m) shifts
+        H_prime(j, :) = shifted;
+        is_codeword(j) = is_codeword_of_G(shifted, H);
+    end
+end
+
+% Optional: Only output bottom (k-m) if you want—otherwise, H_prime is full k x n
+end
